@@ -3,6 +3,7 @@ $(document).ready(function () {
     constructor() {
       this.player = 3;
       this.computer = -2;
+      this.hasWinner = false;
       this.playerString = "<h1>X</h1>";
       this.computerString = "<h1>O</h1>";
       this.gameState = 1;
@@ -69,16 +70,19 @@ $(document).ready(function () {
 
           if (currentScore === this.player * 3) {
             win.html("<h4>Player won the Game!</h4>");
+            this.hasWinner = true;
             this.hasWonEnd();
             this.gameState = 0;
             break;
           } else if (currentScore === this.computer * 3) {
             win.html("<h4>Computer won the Game!</h4>");
+            this.hasWinner = true;
             this.hasWonEnd();
             this.gameState = 0;
             break;
           } else if (this.emptyIndices().length === 0 && i === scores.length - 1) {
             win.html("<h4>It's a draw!</h4>");
+            this.hasWinner = true;
             this.hasWonEnd();
             this.gameState = 0;
           }
@@ -102,9 +106,7 @@ $(document).ready(function () {
     decideBestMove() {
       let emptySpaces = this.emptyIndices();
       let scores = this.scoring();
-      //console.log(scores["scores"]);
       let comp2 = scores["scores"].indexOf(this.computer * 2);
-      //console.log("comp2:" + comp2);
       if (comp2 >= 0) {
         if (scores["empties"][comp2][0] >= 0) {
           return scores["empties"][comp2][0];
@@ -149,18 +151,20 @@ $(document).ready(function () {
         $(".box").on("click", e => {
           let square = $(e.currentTarget);
           if (square.text() === '') {
-            // fills player symbol
             square.html(this.playerString);
             this.table[square.attr('id')] = this.player;
             square.removeClass("empt");
             this.hasWon();
-            this.computerMove();
+            if(!this.hasWinner){
+              this.computerMove();
+            }
           }
         });
       }
     }
 
     reset() {
+      this.hasWinner = false;
       $('.popup.who').removeClass('hideEl');
       this.table = [0, 0, 0, 0, 0, 0, 0, 0, 0];
       for (let i = 0; i < 9; i++) {
